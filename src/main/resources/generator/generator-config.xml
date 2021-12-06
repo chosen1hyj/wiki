@@ -39,6 +39,7 @@
         <javaClientGenerator targetProject="src\main\java"
                              targetPackage="com.hyj.wiki.mapper"
                              type="XMLMAPPER"/>
-        <table tableName="demo"/>
+<!--        <table tableName="demo" domainObjectName="Demo"/>-->
+        <table tableName="ebook" domainObjectName="Ebook"/>
     </context>
 </generatorConfiguration>
