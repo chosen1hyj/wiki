@@ -82,10 +82,10 @@
 import { defineComponent, onMounted, ref } from 'vue';
 import axios from 'axios';
 import {message} from 'ant-design-vue';
-
+import {Tool} from '@/util/tool'
 export default defineComponent({
   name: 'AdminEbook',
-  setup() {
+  setup: function () {
     const param = ref();
     param.value = {};
     const ebooks = ref();
@@ -100,7 +100,7 @@ export default defineComponent({
       {
         title: '封面',
         dataIndex: 'cover',
-        slots: { customRender: 'cover' }
+        slots: {customRender: 'cover'}
       },
       {
         title: '名称',
@@ -131,7 +131,7 @@ export default defineComponent({
       {
         title: 'Action',
         key: 'action',
-        slots: { customRender: 'action' }
+        slots: {customRender: 'action'}
       }
     ];
 
@@ -157,7 +157,7 @@ export default defineComponent({
           // 重置分页按钮
           pagination.value.current = params.page;
           pagination.value.total = data.content.total;
-        }else {
+        } else {
           message.error(data.message);
         }
       });
@@ -178,20 +178,20 @@ export default defineComponent({
     const ebook = ref({});
     const modalVisible = ref(false);
     const modalLoading = ref(false);
-    const handleModalOk = () =>{
-        modalLoading.value = true;
+    const handleModalOk = () => {
+      modalLoading.value = true;
       axios.post("/ebook/save", ebook.value).then(
-          (response) =>{
+          (response) => {
             const data = response.data;
-            modalLoading.value =false;
-            if(data.success){
+            modalLoading.value = false;
+            if (data.success) {
               modalVisible.value = false;
               //重新加载列表
               handleQuery({
                 page: pagination.value.current,
                 size: pagination.value.pageSize
               })
-            }else{
+            } else {
 
               message.error(data.message);
             }
@@ -201,13 +201,13 @@ export default defineComponent({
     }
 
     //编辑
-    const edit = (record: any)=>{
+    const edit = (record: any) => {
       modalVisible.value = true;
-      ebook.value = record;
+      ebook.value = Tool.copy(record);
     }
 
     //新增
-    const add = ()=>{
+    const add = () => {
       console.log("新增")
       modalVisible.value = true;
       ebook.value = {};
@@ -217,9 +217,9 @@ export default defineComponent({
       console.log(id)
 
       axios.delete('/ebook/delete/' + id).then(
-          (response) =>{
+          (response) => {
             const data = response.data;
-            if(data.success){
+            if (data.success) {
               handleQuery({
                 page: pagination.value.current,
                 size: pagination.value.pageSize
@@ -231,8 +231,8 @@ export default defineComponent({
 
     onMounted(() => {
       handleQuery({
-        page:1,
-        size:pagination.value.pageSize
+        page: 1,
+        size: pagination.value.pageSize
       })
     });
 
