@@ -10,6 +10,7 @@ import com.hyj.wiki.req.EbookSaveReq;
 import com.hyj.wiki.resp.EbookQueryResp;
 import com.hyj.wiki.resp.PageResp;
 import com.hyj.wiki.util.CopyUtil;
+import com.hyj.wiki.util.SnowFlake;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -28,6 +29,10 @@ public class EbookService {
     private static final Logger LOG = LoggerFactory.getLogger(EbookService.class);
     @Resource
     private EbookMapper ebookMapper;
+
+    @Resource
+    private SnowFlake snowFlake;
+
     public PageResp<EbookQueryResp> list(EbookQueryReq req){
         EbookExample ebookExample = new EbookExample();
         EbookExample.Criteria criteria = ebookExample.createCriteria();
@@ -52,6 +57,8 @@ public class EbookService {
         Ebook ebook = CopyUtil.copy(req, Ebook.class);
         if(ObjectUtils.isEmpty(req.getId())){
             //新增
+            long nextId = snowFlake.nextId();
+            ebook.setId(nextId);
             ebookMapper.insert(ebook);
         }else{
             //更新
