@@ -82,12 +82,6 @@ export default defineComponent({
     // const ebooks = ref();
     const ebooks = reactive({books:[]});
 
-    const pagination = {
-      onChange: (page: number) => {
-        console.log(page);
-      },
-      pageSize: 3,
-    };
     const actions: Record<string, string>[] = [
       { type: 'StarOutlined', text: '156' },
       { type: 'LikeOutlined', text: '156' },
