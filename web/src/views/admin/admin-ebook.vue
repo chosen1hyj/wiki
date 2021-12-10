@@ -191,10 +191,11 @@ export default defineComponent({
       ebook.value = {};
     }
 
-    const handleDelete = (id: number) => {
-      axios.delete(`/ebook/delete/` + id).then(
+    const handleDelete = (id: any) => {
+      console.log(id)
+
+      axios.delete('/ebook/delete/' + id).then(
           (response) =>{
-            console.log(id)
             const data = response.data;
             if(data.success){
               handleQuery({

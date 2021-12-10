@@ -57,8 +57,7 @@ public class EbookService {
         Ebook ebook = CopyUtil.copy(req, Ebook.class);
         if(ObjectUtils.isEmpty(req.getId())){
             //新增
-            long nextId = snowFlake.nextId();
-            ebook.setId(nextId);
+            ebook.setId(snowFlake.nextId());
             ebookMapper.insert(ebook);
         }else{
             //更新
