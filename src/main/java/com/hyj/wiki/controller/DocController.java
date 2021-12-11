@@ -2,14 +2,15 @@ package com.hyj.wiki.controller;
 
 import com.hyj.wiki.req.DocQueryReq;
 import com.hyj.wiki.req.DocSaveReq;
-import com.hyj.wiki.resp.DocQueryResp;
 import com.hyj.wiki.resp.CommonResp;
+import com.hyj.wiki.resp.DocQueryResp;
 import com.hyj.wiki.resp.PageResp;
 import com.hyj.wiki.service.DocService;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.validation.Valid;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -49,10 +50,15 @@ public class DocController {
         return resp;
     }
 
-    @DeleteMapping("/delete/{id}")
-    public CommonResp delete(@PathVariable Long id){
+    @DeleteMapping("/delete/{idsStr}")
+    public CommonResp delete(@PathVariable String idsStr){
         CommonResp resp = new CommonResp();
-        docService.delete(id);
+        String[] idsStrArray = idsStr.split(",");
+        List<Long> ids = new ArrayList<>();
+        for (String idStr : idsStrArray) {
+            ids.add(Long.parseLong(idStr));
+        }
+        docService.delete(ids);
         return resp;
     }
 
