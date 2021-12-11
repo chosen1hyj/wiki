@@ -27,7 +27,10 @@
     <a-layout-content
         :style="{ background: '#fff', padding: '24px', margin: 0, minHeight: '280px' }"
     >
-        <a-list item-layout="vertical" size="large" :grid="{ gutter: 20, column: 3 }"
+      <div class="welcome" v-show="isShowWelcome">
+        <h1>欢迎</h1>
+      </div>
+      <a-list v-show="!isShowWelcome" item-layout="vertical" size="large" :grid="{ gutter: 20, column: 3 }"
                  :data-source="books">
           <template #renderItem="{ item }">
             <a-list-item key="item.name">
@@ -80,9 +83,13 @@ export default defineComponent({
       });
     };
 
-    const handleClick = ()=>{
-      console.log("menu click")
+    const isShowWelcome = ref(true);
+
+    const handleClick = (value: any)=>{
+      // console.log("menu click")
+      isShowWelcome.value = value.key === 'welcome';
     }
+
 
 
     const actions: Record<string, string>[] = [
@@ -112,7 +119,8 @@ export default defineComponent({
       books: toRef(ebooks, 'books'),
       actions,
       level1,
-      handleClick
+      handleClick,
+      isShowWelcome
     }
   }
 
