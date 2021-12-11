@@ -2,8 +2,10 @@ package com.hyj.wiki.service;
 
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.hyj.wiki.domain.Content;
 import com.hyj.wiki.domain.Doc;
 import com.hyj.wiki.domain.DocExample;
+import com.hyj.wiki.mapper.ContentMapper;
 import com.hyj.wiki.mapper.DocMapper;
 import com.hyj.wiki.req.DocQueryReq;
 import com.hyj.wiki.req.DocSaveReq;
@@ -29,6 +31,9 @@ public class DocService {
     private static final Logger LOG = LoggerFactory.getLogger(DocService.class);
     @Resource
     private DocMapper docMapper;
+
+    @Resource
+    private ContentMapper contentMapper;
 
     @Resource
     private SnowFlake snowFlake;
@@ -62,13 +67,20 @@ public class DocService {
     //保存
     public void save(DocSaveReq req){
         Doc doc = CopyUtil.copy(req, Doc.class);
+        Content content = CopyUtil.copy(req, Content.class);
         if(ObjectUtils.isEmpty(req.getId())){
             //新增
-            doc.setId(snowFlake.nextId());
+            long nextId = snowFlake.nextId();
+            doc.setId(nextId);
+            content.setId(nextId);
             docMapper.insert(doc);
+            contentMapper.insert(content);
         }else{
             //更新
             docMapper.updateByPrimaryKey(doc);
+            int count = contentMapper.updateByPrimaryKeyWithBLOBs(content);
+            if(count == 0)
+                contentMapper.insert(content);
         }
     }
 
@@ -81,5 +93,13 @@ public class DocService {
         DocExample.Criteria criteria = docExample.createCriteria();
         criteria.andIdIn(ids);
         docMapper.deleteByExample(docExample);
+    }
+
+    public String findContent(Long id){
+        Content content = contentMapper.selectByPrimaryKey(id);
+        if(content != null)
+            return content.getContent();
+        else
+            return "";
     }
 }

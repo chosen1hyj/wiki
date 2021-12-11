@@ -55,7 +55,7 @@
           <p>
             <a-form layout="incline">
               <a-form-item>
-                <a-button type="primary">
+                <a-button type="primary" @click="handleSave">
                   保存
                 </a-button>
               </a-form-item>
@@ -95,7 +95,7 @@
 <!--      title="文档表单"-->
 <!--      v-model:visible="modalVisible"-->
 <!--      :confirm-loading="modalLoading"-->
-<!--      @ok="handleModalOk">-->
+<!--      @ok="handleSave">-->
 <!--    <a-form :model="doc" :label-col="{ span: 6 }" :wrapper-col="{ span: 18 }">-->
 <!--      -->
 <!--      <a-form-item label="名称">-->
@@ -184,20 +184,26 @@ export default defineComponent({
     };
 
 
+
+
+
     //--------------表单------------------
-    const doc = ref({});
+    const doc = ref();
+    doc.value = {}
     const modalVisible = ref(false);
     const modalLoading = ref(false);
     const editor = new E('#content');
     editor.config.zIndex = 0;
-    const handleModalOk = () => {
+    
+    const handleSave = () => {
       modalLoading.value = true;
+      doc.value.content = editor.txt.html()
       axios.post("/doc/save", doc.value).then(
           (response) => {
             const data = response.data;
             modalLoading.value = false;
             if (data.success) {
-              modalVisible.value = false;
+              message.success("保存成功!")
               //重新加载列表
               handleQuery()
             } else {
@@ -281,9 +287,9 @@ export default defineComponent({
 
     //编辑
     const edit = (record: any) => {
-      modalVisible.value = true;
-      doc.value = Tool.copy(record);
 
+      doc.value = Tool.copy(record);
+      handleQueryContent();
       // 不能选择当前节点及其所有子孙节点，作为父节点，会使树断开
       treeSelectData.value = Tool.copy(level1.value);
       setDisable(treeSelectData.value, record.id);
@@ -298,13 +304,24 @@ export default defineComponent({
 
     //新增
     const add = () => {
-      console.log("新增")
-      modalVisible.value = true;
+      // modalVisible.value = true;
+      editor.txt.html("");
       doc.value = {
         ebookId: route.query.ebookId
       };
 
     }
+
+    const handleQueryContent = () => {
+      axios.get(`/doc/find-content/${doc.value.id}`).then((response) => {
+        const data = response.data;
+        if (data.success) {
+          editor.txt.html(data.content)
+        } else {
+          message.error(data.message);
+        }
+      });
+    };
 
     const handleDelete = (id: any) => {
       console.log(id)
@@ -349,7 +366,7 @@ export default defineComponent({
 
       modalVisible,
       modalLoading,
-      handleModalOk,
+      handleSave,
       handleDelete,
       doc,
       treeSelectData,
