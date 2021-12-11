@@ -85,12 +85,35 @@ export default defineComponent({
 
     const isShowWelcome = ref(true);
 
-    const handleClick = (value: any)=>{
-      // console.log("menu click")
-      isShowWelcome.value = value.key === 'welcome';
+    let categoryId2 = 0;
+
+    const handleQueryEBook = () =>{
+      axios.get(`/ebook/list`,{
+        params:{
+          page: 1,
+          size: 1000,
+          categoryId2
+        }
+      }).then(
+          (response)=>{
+            const data = response.data;
+            ebooks.books = data.content.list
+          }
+      )
     }
 
 
+    const handleClick = (value: any)=>{
+      // console.log("menu click")
+      // isShowWelcome.value = value.key === 'welcome';
+      if(value.key === 'welcome'){
+        isShowWelcome.value = true;
+      }else{
+        categoryId2 = value.key;
+        isShowWelcome.value = false;
+        handleQueryEBook();
+      }
+    }
 
     const actions: Record<string, string>[] = [
       { type: 'StarOutlined', text: '156' },
@@ -103,17 +126,7 @@ export default defineComponent({
     onMounted(()=>{
       handleQueryCategory();
       console.log('onMounted222')
-      axios.get(`/ebook/list`,{
-        params:{
-          page: 1,
-          size: 1000
-        }
-      }).then(
-          (response)=>{
-            const data = response.data;
-            ebooks.books = data.content.list
-          }
-      )
+
     })
     return {
       books: toRef(ebooks, 'books'),
