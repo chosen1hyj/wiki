@@ -45,6 +45,7 @@
           </a-space>
         </template>
       </a-table>
+
     </a-layout-content>
   </a-layout>
   <a-modal
@@ -57,10 +58,6 @@
       <a-form-item label="名称">
         <a-input v-model:value="doc.name" />
       </a-form-item>
-      <a-form-item label="顺序">
-        <a-input v-model:value="doc.sort" />
-      </a-form-item>
-
       <a-form-item label="父文档">
         <a-tree-select
             v-model:value="doc.parent"
@@ -73,6 +70,12 @@
         >
         </a-tree-select>
       </a-form-item>
+      <a-form-item label="顺序">
+        <a-input v-model:value="doc.sort" />
+      </a-form-item>
+      <a-form-item label="内容">
+        <div id="content"></div>
+      </a-form-item>
     </a-form>
   </a-modal>
 </template>
@@ -84,6 +87,7 @@ import {message, Modal} from 'ant-design-vue';
 import {Tool} from '@/util/tool'
 import {useRoute} from "vue-router";
 import ExclamationCircleOutlined from "@ant-design/icons-vue/ExclamationCircleOutlined";
+import E from 'wangeditor';
 
 export default defineComponent({
   name: 'AdminDoc',
@@ -149,6 +153,8 @@ export default defineComponent({
     const doc = ref({});
     const modalVisible = ref(false);
     const modalLoading = ref(false);
+    const editor = new E('#content');
+
     const handleModalOk = () => {
       modalLoading.value = true;
       axios.post("/doc/save", doc.value).then(
@@ -167,6 +173,7 @@ export default defineComponent({
           }
       )
     }
+
 
     /**
      * 将某节点及其子孙节点全部置为disabled
@@ -248,6 +255,9 @@ export default defineComponent({
 
       // 为选择树添加一个"无"
       treeSelectData.value.unshift({id: 0, name: '无'});
+      setTimeout(() => {
+        editor.create();
+      },100);
     }
 
 
@@ -259,6 +269,12 @@ export default defineComponent({
       doc.value = {
         ebookId: route.query.ebookId
       };
+      // editor.create();
+
+
+      setTimeout(() => {
+        editor.create();
+      },100);
     }
 
     const handleDelete = (id: any) => {
@@ -287,7 +303,7 @@ export default defineComponent({
     }
 
     onMounted(() => {
-      handleQuery()
+      handleQuery();
     });
 
     return {
@@ -305,7 +321,7 @@ export default defineComponent({
       handleModalOk,
       handleDelete,
       doc,
-      treeSelectData
+      treeSelectData,
     }
   }
 });
