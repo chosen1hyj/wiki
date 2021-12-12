@@ -55,8 +55,9 @@ public class DocService {
 
     }
 
-    public List<DocQueryResp> all(){
+    public List<DocQueryResp> all(Long ebookId){
         DocExample docExample = new DocExample();
+        docExample.createCriteria().andEbookIdEqualTo(ebookId);
         docExample.setOrderByClause("sort asc");
         List<Doc> docList = docMapper.selectByExample(docExample);
 
@@ -97,9 +98,9 @@ public class DocService {
 
     public String findContent(Long id){
         Content content = contentMapper.selectByPrimaryKey(id);
-        if(content != null)
-            return content.getContent();
-        else
+        if(ObjectUtils.isEmpty(content))
             return "";
+        else
+            return content.getContent();
     }
 }
