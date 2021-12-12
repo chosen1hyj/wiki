@@ -2,14 +2,14 @@ package com.hyj.wiki.req;
 
 
 import javax.validation.constraints.Max;
-import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 
 public class PageReq {
 
-    @NotEmpty(message = "[页码] 不能为空")
+    @NotNull(message = "[页码] 不能为空")
     private Integer page;
 
-    @NotEmpty(message = "[每页条数] 不能为空")
+    @NotNull(message = "[每页条数] 不能为空")
     @Max(value = 1000, message = "[每页条数]不能超过1000")
     private Integer size;
 

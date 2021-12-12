@@ -1,15 +1,15 @@
 package com.hyj.wiki.req;
 
-import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 
 public class CategorySaveReq {
     private Long id;
 
     private Long parent;
 
-    @NotEmpty(message = "[名称]不能为空")
+    @NotNull(message = "[名称]不能为空")
     private String name;
-    @NotEmpty(message = "[排序]不能为空")
+    @NotNull(message = "[排序]不能为空")
     private Integer sort;
 
     public Long getId() {

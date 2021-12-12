@@ -1,20 +1,20 @@
 package com.hyj.wiki.req;
 
-import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 
 public class DocSaveReq {
     private Long id;
 
-    @NotEmpty(message = "[电纸书id]不能为空")
+    @NotNull(message = "[电纸书id]不能为空")
     private Long ebookId;
 
-    @NotEmpty(message = "[父id]不能为空")
+    @NotNull(message = "[父id]不能为空")
     private Long parent;
 
-    @NotEmpty(message = "[名称]不能为空")
+    @NotNull(message = "[名称]不能为空")
     private String name;
 
-    @NotEmpty(message = "[顺序]不能为空")
+    @NotNull(message = "[顺序]不能为空")
     private Integer sort;
 
     private Integer viewCount;
@@ -29,7 +29,7 @@ public class DocSaveReq {
         this.content = content;
     }
 
-    @NotEmpty(message = "[内容]不能为空")
+    @NotNull(message = "[内容]不能为空")
     private String content;
 
     public Long getId() {
