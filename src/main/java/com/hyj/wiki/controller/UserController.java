@@ -3,9 +3,10 @@ package com.hyj.wiki.controller;
 import com.hyj.wiki.req.UserQueryReq;
 import com.hyj.wiki.req.UserSaveReq;
 import com.hyj.wiki.resp.CommonResp;
-import com.hyj.wiki.resp.UserQueryResp;
 import com.hyj.wiki.resp.PageResp;
+import com.hyj.wiki.resp.UserQueryResp;
 import com.hyj.wiki.service.UserService;
+import org.springframework.util.DigestUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -36,6 +37,7 @@ public class UserController {
     @PostMapping("/save")
     public CommonResp save(@Valid @RequestBody UserSaveReq req){
         CommonResp resp = new CommonResp();
+        req.setPassword(DigestUtils.md5DigestAsHex(req.getPassword().getBytes()));
         userService.save(req);
         return resp;
     }
