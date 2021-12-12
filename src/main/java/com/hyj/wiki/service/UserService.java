@@ -7,9 +7,11 @@ import com.hyj.wiki.domain.UserExample;
 import com.hyj.wiki.exception.BusinessException;
 import com.hyj.wiki.exception.BusinessExceptionCode;
 import com.hyj.wiki.mapper.UserMapper;
+import com.hyj.wiki.req.UserLoginReq;
 import com.hyj.wiki.req.UserQueryReq;
 import com.hyj.wiki.req.UserResetPasswordReq;
 import com.hyj.wiki.req.UserSaveReq;
+import com.hyj.wiki.resp.UserLoginResp;
 import com.hyj.wiki.resp.UserQueryResp;
 import com.hyj.wiki.resp.PageResp;
 import com.hyj.wiki.util.CopyUtil;
@@ -95,5 +97,24 @@ public class UserService {
             return null;
         else
             return userList.get(0);
+    }
+
+    public UserLoginResp login(UserLoginReq req) {
+        User userDb = selectByLoginName(req.getLoginName());
+        if(ObjectUtils.isEmpty(userDb)){
+            LOG.info("用户名不存在，{}", req.getLoginName());
+            //用户不存在
+            throw new BusinessException(BusinessExceptionCode.LOGIN_USER_ERROR);
+        }else{
+            if(userDb.getPassword().equals(req.getPassword())){
+                //登录成功
+                UserLoginResp userLoginResp = CopyUtil.copy(userDb, UserLoginResp.class);
+                return userLoginResp;
+            }else{
+                //密码不对
+                LOG.info("密码不对，输入密码:{}, 数据库密码:{}", req.getPassword(), userDb.getPassword());
+                throw new BusinessException(BusinessExceptionCode.LOGIN_USER_ERROR);
+            }
+        }
     }
 }
