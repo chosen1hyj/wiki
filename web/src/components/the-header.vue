@@ -21,9 +21,23 @@
       <a-menu-item key="/about">
         <router-link to="/about">关于我们</router-link>
       </a-menu-item>
-      <a class="login-menu" @click="showLoginModal">
-        <span>登录</span>
-      </a>
+      <a-menu-item key="login">
+          <a class="login-menu" v-show="!user.id" @click="showLoginModal">
+            登录
+          </a>
+          <a class="login-menu" v-show="user.id">
+            您好:{{user.name}}
+          </a>
+      </a-menu-item>
+<!--      <a class="login-menu" v-show="user.id">-->
+<!--        您好:{{user.name}}-->
+<!--      </a>-->
+<!--      <a-menu-item key="login">-->
+<!--        <a  v-show="!user.id" @click="showLoginModal">-->
+<!--          登录-->
+<!--        </a>-->
+<!--      </a-menu-item>-->
+
     </a-menu>
 
     <a-modal
@@ -56,9 +70,14 @@ declare let KEY: any;
 export default defineComponent({
   name: 'the-header',
   setup(){
+
+    //登录后保存
+    const user = ref()
+    user.value = {}
+    //用来登录
     const loginUser = ref({
-      loginName: "test",
-      password: 'test'
+      loginName: "test2",
+      password: 'test123'
     });
 
     const loginModalVisible = ref(false);
@@ -76,6 +95,7 @@ export default defineComponent({
             const data = response.data;
             if(data.success){
               loginModalVisible.value = false;
+              user.value = data.content;
               message.success("登录成功！");
             }else{
               message.error(data.message);
@@ -88,7 +108,8 @@ export default defineComponent({
       loginModalLoading,
       showLoginModal,
       loginUser,
-      login
+      login,
+      user
     }
   }
 
@@ -97,7 +118,7 @@ export default defineComponent({
 
 <style>
 .login-menu {
-  float: right;
+  float: right !important;
   color: white;
   padding-left: 10px;
 }
