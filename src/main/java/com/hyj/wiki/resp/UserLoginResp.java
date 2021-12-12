@@ -1,14 +1,14 @@
 package com.hyj.wiki.resp;
 
-import javax.validation.constraints.NotNull;
+import javax.validation.constraints.NotEmpty;
 
 public class UserLoginResp {
     private Long id;
 
-    @NotNull(message = "[用户名]不能为空")
+    @NotEmpty(message = "[用户名]不能为空")
     private String loginName;
 
-    @NotNull(message = "[昵称]不能为空")
+    @NotEmpty(message = "[昵称]不能为空")
     private String name;
 
     public Long getId() {
