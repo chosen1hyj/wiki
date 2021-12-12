@@ -1,6 +1,7 @@
 package com.hyj.wiki.controller;
 
 import com.hyj.wiki.req.UserQueryReq;
+import com.hyj.wiki.req.UserResetPasswordReq;
 import com.hyj.wiki.req.UserSaveReq;
 import com.hyj.wiki.resp.CommonResp;
 import com.hyj.wiki.resp.PageResp;
@@ -39,6 +40,14 @@ public class UserController {
         CommonResp resp = new CommonResp();
         req.setPassword(DigestUtils.md5DigestAsHex(req.getPassword().getBytes()));
         userService.save(req);
+        return resp;
+    }
+
+    @PostMapping("/reset-password")
+    public CommonResp resetPassword(@Valid @RequestBody UserResetPasswordReq req){
+        CommonResp resp = new CommonResp();
+        req.setPassword(DigestUtils.md5DigestAsHex(req.getPassword().getBytes()));
+        userService.resetPassword(req);
         return resp;
     }
 

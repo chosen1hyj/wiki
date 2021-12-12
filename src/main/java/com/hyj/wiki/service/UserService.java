@@ -8,6 +8,7 @@ import com.hyj.wiki.exception.BusinessException;
 import com.hyj.wiki.exception.BusinessExceptionCode;
 import com.hyj.wiki.mapper.UserMapper;
 import com.hyj.wiki.req.UserQueryReq;
+import com.hyj.wiki.req.UserResetPasswordReq;
 import com.hyj.wiki.req.UserSaveReq;
 import com.hyj.wiki.resp.UserQueryResp;
 import com.hyj.wiki.resp.PageResp;
@@ -71,8 +72,14 @@ public class UserService {
         }else{
             //更新
             user.setLoginName(null);
+            user.setPassword(null);
             userMapper.updateByPrimaryKeySelective(user);
         }
+    }
+
+    public void resetPassword(UserResetPasswordReq req){
+        User user = CopyUtil.copy(req, User.class);
+        userMapper.updateByPrimaryKeySelective(user);
     }
 
     public void delete(long id){
