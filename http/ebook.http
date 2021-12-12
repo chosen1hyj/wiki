@@ -3,3 +3,7 @@ Accept: application/json
 ###
 GET http://localhost:8880/doc/all/1
 Accept: application/json
+
+###
+GET http://localhost:8880/save
+Accept: application/json
