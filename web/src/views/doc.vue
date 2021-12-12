@@ -1,6 +1,7 @@
 <template>
   <a-layout>
     <a-layout-content :style="{ background: '#fff', padding: '24px', margin: 0, minHeight: '280px'}">
+     <h3 v-if="level1.length===0">对不起，找不到相关文档</h3>
       <div class="doc">
         <a-row>
           <a-col :span="6">
@@ -10,6 +11,7 @@
             @select="onSelect"
             :replaceFields="{title: 'name', key: 'id', value: 'id'}"
             defaultExpandAll="true"
+            :defaultSelectedKeys="defaultSelectedKeys"
             >
             </a-tree>
           </a-col>
@@ -32,14 +34,30 @@ import {useRoute} from "vue-router";
 export default defineComponent({
   name: 'Doc',
   setup: function () {
-    const route = new useRoute();
+    const route = useRoute();
     const treeSelectData = ref();
     treeSelectData.value = []
+    const defaultSelectedKeys = ref();
+    defaultSelectedKeys.value = [];
 
     const docs = ref({});
     const html = ref();
     const level1 = ref();
     level1.value = []
+
+
+    //内容查询
+    const handleQueryContent = (id: any) => {
+      axios.get(`/doc/find-content/${id}`).then((response) => {
+        const data = response.data;
+        if (data.success) {
+          html.value = data.content;
+        } else {
+          message.error(data.message);
+        }
+      });
+    };
+    
     /**
      * 数据查询
      **/
@@ -54,23 +72,17 @@ export default defineComponent({
           level1.value = [];
           level1.value = Tool.array2Tree(docs.value, 0);
           console.log("树形结构：",level1);
+          if(Tool.isNotEmpty(level1.value)){
+            defaultSelectedKeys.value = [level1.value[0].id];
+            handleQueryContent(level1.value[0].id);
+          }
         } else {
           message.error(data.message);
         }
       });
     };
 
-    //内容查询
-    const handleQueryContent = (id) => {
-      axios.get(`/doc/find-content/${id}`).then((response) => {
-        const data = response.data;
-        if (data.success) {
-          html.value = data.content;
-        } else {
-          message.error(data.message);
-        }
-      });
-    };
+    
 
     const onSelect = (selectedKeys: any, info: any) =>{
       console.log('selected', selectedKeys, info);
@@ -87,7 +99,8 @@ export default defineComponent({
       // docs,
       level1,
       html,
-      onSelect
+      onSelect,
+      defaultSelectedKeys
     }
   }
 });
