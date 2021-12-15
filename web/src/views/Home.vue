@@ -138,7 +138,6 @@ export default defineComponent({
     })
     return {
       books: toRef(ebooks, 'books'),
-      actions,
       level1,
       handleClick,
       isShowWelcome
