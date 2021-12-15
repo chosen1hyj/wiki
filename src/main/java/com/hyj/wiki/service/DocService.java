@@ -18,6 +18,7 @@ import com.hyj.wiki.util.CopyUtil;
 import com.hyj.wiki.util.RedisUtil;
 import com.hyj.wiki.util.RequestContext;
 import com.hyj.wiki.util.SnowFlake;
+import com.hyj.wiki.websocket.WebSocketServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -48,6 +49,9 @@ public class DocService {
 
     @Resource
     public RedisUtil redisUtil;
+
+    @Resource
+    public WebSocketServer webSocketServer;
 
     public PageResp<DocQueryResp> list(DocQueryReq req){
         DocExample docExample = new DocExample();
@@ -127,6 +131,9 @@ public class DocService {
             throw new BusinessException(BusinessExceptionCode.VOTE_REPEAT);
         }
 
+        //推送消息
+        Doc docDb = docMapper.selectByPrimaryKey(id);
+        webSocketServer.sendInfo("[" + docDb.getName() + "]被点赞!");
     }
 
     public void updateEbookInfo() {
