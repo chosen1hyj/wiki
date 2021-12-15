@@ -5,6 +5,8 @@ import com.github.pagehelper.PageInfo;
 import com.hyj.wiki.domain.Content;
 import com.hyj.wiki.domain.Doc;
 import com.hyj.wiki.domain.DocExample;
+import com.hyj.wiki.exception.BusinessException;
+import com.hyj.wiki.exception.BusinessExceptionCode;
 import com.hyj.wiki.mapper.ContentMapper;
 import com.hyj.wiki.mapper.DocMapper;
 import com.hyj.wiki.mapper.DocMapperCust;
@@ -13,6 +15,8 @@ import com.hyj.wiki.req.DocSaveReq;
 import com.hyj.wiki.resp.DocQueryResp;
 import com.hyj.wiki.resp.PageResp;
 import com.hyj.wiki.util.CopyUtil;
+import com.hyj.wiki.util.RedisUtil;
+import com.hyj.wiki.util.RequestContext;
 import com.hyj.wiki.util.SnowFlake;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,6 +45,9 @@ public class DocService {
 
     @Resource
     private SnowFlake snowFlake;
+
+    @Resource
+    public RedisUtil redisUtil;
 
     public PageResp<DocQueryResp> list(DocQueryReq req){
         DocExample docExample = new DocExample();
@@ -109,5 +116,16 @@ public class DocService {
             return "";
         else
             return content.getContent();
+    }
+
+    public void vote(Long id) {
+
+        String key = RequestContext.getRemoteAddr();
+        if(redisUtil.validateRepeat("DOC_VOTE" + id + "_" + key, 3600 * 24)){
+            docMapperCust.increaseVoteCount(id);
+        }else{
+            throw new BusinessException(BusinessExceptionCode.VOTE_REPEAT);
+        }
+
     }
 }
