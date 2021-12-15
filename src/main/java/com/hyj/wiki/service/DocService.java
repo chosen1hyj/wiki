@@ -18,6 +18,7 @@ import com.hyj.wiki.util.CopyUtil;
 import com.hyj.wiki.util.RedisUtil;
 import com.hyj.wiki.util.RequestContext;
 import com.hyj.wiki.util.SnowFlake;
+import org.apache.rocketmq.spring.core.RocketMQTemplate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
@@ -53,6 +54,10 @@ public class DocService {
 
     @Resource
     public WsService wsService;
+
+    @Resource
+    private RocketMQTemplate rocketMQTemplate;
+
 
     public PageResp<DocQueryResp> list(DocQueryReq req){
         DocExample docExample = new DocExample();
@@ -127,7 +132,7 @@ public class DocService {
     public void vote(Long id) {
 
         String key = RequestContext.getRemoteAddr();
-        if(redisUtil.validateRepeat("DOC_VOTE" + id + "_" + key, 3600 * 24)){
+        if(redisUtil.validateRepeat("DOC_VOTE" + id + "_" + key, 5)){
             docMapperCust.increaseVoteCount(id);
         }else{
             throw new BusinessException(BusinessExceptionCode.VOTE_REPEAT);
@@ -135,7 +140,8 @@ public class DocService {
         //推送消息
         Doc docDb = docMapper.selectByPrimaryKey(id);
         String logId = MDC.get("LOG_ID");
-        wsService.sendInfo("[" + docDb.getName() + "]被点赞!", logId);
+//        wsService.sendInfo("[" + docDb.getName() + "]被点赞!", logId);
+        rocketMQTemplate.convertAndSend("VOTE_TOPIC", "[" + docDb.getName() + "]被点赞!");
     }
 
 
