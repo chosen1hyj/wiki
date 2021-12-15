@@ -7,6 +7,7 @@ import com.hyj.wiki.domain.Doc;
 import com.hyj.wiki.domain.DocExample;
 import com.hyj.wiki.mapper.ContentMapper;
 import com.hyj.wiki.mapper.DocMapper;
+import com.hyj.wiki.mapper.DocMapperCust;
 import com.hyj.wiki.req.DocQueryReq;
 import com.hyj.wiki.req.DocSaveReq;
 import com.hyj.wiki.resp.DocQueryResp;
@@ -31,6 +32,9 @@ public class DocService {
     private static final Logger LOG = LoggerFactory.getLogger(DocService.class);
     @Resource
     private DocMapper docMapper;
+
+    @Resource
+    private DocMapperCust docMapperCust;
 
     @Resource
     private ContentMapper contentMapper;
@@ -74,6 +78,8 @@ public class DocService {
             long nextId = snowFlake.nextId();
             doc.setId(nextId);
             content.setId(nextId);
+            doc.setViewCount(0);
+            doc.setVoteCount(0);
             docMapper.insert(doc);
             contentMapper.insert(content);
         }else{
@@ -98,6 +104,7 @@ public class DocService {
 
     public String findContent(Long id){
         Content content = contentMapper.selectByPrimaryKey(id);
+        docMapperCust.increaseViewCount(id);
         if(ObjectUtils.isEmpty(content))
             return "";
         else
