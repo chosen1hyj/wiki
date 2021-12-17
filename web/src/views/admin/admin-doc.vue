@@ -187,7 +187,8 @@ export default defineComponent({
           level1.value = Tool.array2Tree(docs.value, 0);
           console.log("树形结构：",level1);
           treeSelectData.value = Tool.copy(level1.value);
-
+          if (treeSelectData.value === undefined)
+            treeSelectData.value = []
           treeSelectData.value.unshift({id: 0, name: '无'});
         } else {
           message.error(data.message);
